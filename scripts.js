@@ -66,49 +66,44 @@ CreateListAuthorGenre(genres, document.querySelector("[data-search-genres]"), "A
 
 CreateListAuthorGenre(authors, document.querySelector("[data-search-authors]"), "all Authors");
 
-// const genreHtml = document.createDocumentFragment();
-// const firstGenreElement = document.createElement("option");
-// firstGenreElement.value = "any";
-// firstGenreElement.innerText = "All Genres";
-// genreHtml.appendChild(firstGenreElement);
-
-// for (const [id, name] of Object.entries(genres)) {
-//   const element = document.createElement("option");
-//   element.value = id;
-//   element.innerText = name;
-//   genreHtml.appendChild(element);
-// }
-
-// document.querySelector("[data-search-genres]").appendChild(genreHtml);
-
-// const authorsHtml = document.createDocumentFragment();
-// const firstAuthorElement = document.createElement("option");
-// firstAuthorElement.value = "any";
-// firstAuthorElement.innerText = "All Authors";
-// authorsHtml.appendChild(firstAuthorElement);
-
-// for (const [id, name] of Object.entries(authors)) {
-//   const element = document.createElement("option");
-//   element.value = id;
-//   element.innerText = name;
-//   authorsHtml.appendChild(element);
-// }
-
-// document.querySelector("[data-search-authors]").appendChild(authorsHtml);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 ////////theme function//////////////////////////////////
+//let manualThemeSet = false;
 
-if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-  document.querySelector("[data-settings-theme]").value = "night";
-  document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
-  document.documentElement.style.setProperty("--color-light", "10, 10, 20");
-} else {
-  document.querySelector("[data-settings-theme]").value = "day";
-  document.documentElement.style.setProperty("--color-dark", "10, 10, 20");
-  document.documentElement.style.setProperty("--color-light", "255, 255, 255");
+function applyPreferredTheme() {
+  //if (manualThemeSet) return;
+
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    document.querySelector("[data-settings-theme]").value = "night";
+    document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
+    document.documentElement.style.setProperty("--color-light", "10, 10, 20");
+  } else {
+    document.querySelector("[data-settings-theme]").value = "day";
+    document.documentElement.style.setProperty("--color-dark", "10, 10, 20");
+    document.documentElement.style.setProperty("--color-light", "255, 255, 255");
+  }
 }
 
+function manualThemeSelector(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const { theme } = Object.fromEntries(formData);
+
+  if (theme === "night") {
+    document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
+    document.documentElement.style.setProperty("--color-light", "10, 10, 20");
+  } else {
+    document.documentElement.style.setProperty("--color-dark", "10, 10, 20");
+    document.documentElement.style.setProperty("--color-light", "255, 255, 255");
+  }
+  document.querySelector("[data-settings-overlay]").open = false;
+  //manualThemeSet = true;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  applyPreferredTheme();
+});
+
+document.querySelector("[data-settings-form]").addEventListener("submit", manualThemeSelector);
 //////////////////// SHOW MORE BOOKS FUNCTION///////////////////////////////
 
 document.querySelector("[data-list-button]").innerText = `Show more (${
@@ -144,24 +139,26 @@ document.querySelector("[data-header-settings]").addEventListener("click", () =>
 document.querySelector("[data-list-close]").addEventListener("click", () => {
   document.querySelector("[data-list-active]").open = false;
 });
+//////thme set function////////////////////////////////////////////////////////
 
-document.querySelector("[data-settings-form]").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  const { theme } = Object.fromEntries(formData);
+// function manualThemeSelector(event) {
+//   const formData = new FormData(event.target);
+//   const { theme } = Object.fromEntries(formData);
 
-  //////thme set function////////////////////////////////////////////////////////
-  if (theme === "night") {
-    document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
-    document.documentElement.style.setProperty("--color-light", "10, 10, 20");
-  } else {
-    document.documentElement.style.setProperty("--color-dark", "10, 10, 20");
-    document.documentElement.style.setProperty("--color-light", "255, 255, 255");
-  }
+//   if (theme === "night") {
+//     document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
+//     document.documentElement.style.setProperty("--color-light", "10, 10, 20");
+//   } else {
+//     document.documentElement.style.setProperty("--color-dark", "10, 10, 20");
+//     document.documentElement.style.setProperty("--color-light", "255, 255, 255");
+//   }
+//   document.querySelector("[data-settings-overlay]").open = false;
+//   manualThemeSet = true;
+// }
 
-  document.querySelector("[data-settings-overlay]").open = false;
-});
-///////////////
+// applyPreferredTheme();
+// document.querySelector("[data-settings-form]").addEventListener("submit", manualThemeSelector);
+
 document.querySelector("[data-search-form]").addEventListener("submit", (event) => {
   event.preventDefault();
 

@@ -1,5 +1,25 @@
 import { books, authors, genres, BOOKS_PER_PAGE } from "./data.js";
 
+const bookObject = books.map((book) => ({
+  id: book.id,
+  title: book.title,
+  author: book.author,
+  image: book.image,
+  genre: book.genres,
+  description: book.description,
+  published: book.published,
+}));
+
+const AuthorObject = Object.entries(authors).map(([id, authorName]) => ({
+  id,
+  authorName,
+}));
+
+const genreObjects = Object.entries(genres).map(([id, genreName]) => ({
+  id,
+  genreName,
+}));
+
 let page = 1;
 let matches = books;
 
@@ -46,7 +66,6 @@ updateShowMoreButton();
  * @param {HTMLElement} targetElement - The html element that is the drop down menu for the genre or author choice.
  * @param {'string'} allOptions - option for all of the genres or authors.
  */
-
 function CreateListAuthorGenre(data, targetElement, allOptions) {
   const propertyHtml = document.createDocumentFragment();
   const firstOptionElement = document.createElement("option");

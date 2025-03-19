@@ -37,6 +37,7 @@ createAndAddBooksToUI(
   document.querySelector("[data-list-items]"),
   authors
 );
+updateShowMoreButton();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -67,11 +68,11 @@ CreateListAuthorGenre(genres, document.querySelector("[data-search-genres]"), "A
 CreateListAuthorGenre(authors, document.querySelector("[data-search-authors]"), "all Authors");
 
 ////////theme function//////////////////////////////////
-//let manualThemeSet = false;
 
+/**
+ * ApplyPreferredTheme is a function to check users preffered theme and adds it.
+ */
 function applyPreferredTheme() {
-  //if (manualThemeSet) return;
-
   if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
     document.querySelector("[data-settings-theme]").value = "night";
     document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
@@ -83,6 +84,10 @@ function applyPreferredTheme() {
   }
 }
 
+/**
+ * This function handles the manual theme selection
+ * @param {Event} event - form submission event
+ */
 function manualThemeSelector(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
@@ -96,7 +101,6 @@ function manualThemeSelector(event) {
     document.documentElement.style.setProperty("--color-light", "255, 255, 255");
   }
   document.querySelector("[data-settings-overlay]").open = false;
-  //manualThemeSet = true;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -104,19 +108,25 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.querySelector("[data-settings-form]").addEventListener("submit", manualThemeSelector);
+
 //////////////////// SHOW MORE BOOKS FUNCTION///////////////////////////////
+/**
+ * updates the actual show more button text.
+ */
+function updateShowMoreButton() {
+  document.querySelector("[data-list-button]").innerText = `Show more (${
+    books.length - BOOKS_PER_PAGE
+  })`;
+  document.querySelector("[data-list-button]").disabled =
+    matches.length - page * BOOKS_PER_PAGE <= 0;
 
-document.querySelector("[data-list-button]").innerText = `Show more (${
-  books.length - BOOKS_PER_PAGE
-})`;
-document.querySelector("[data-list-button]").disabled = matches.length - page * BOOKS_PER_PAGE <= 0;
-
-document.querySelector("[data-list-button]").innerHTML = `
+  document.querySelector("[data-list-button]").innerHTML = `
     <span>Show more</span>
     <span class="list__remaining"> (${
       matches.length - page * BOOKS_PER_PAGE > 0 ? matches.length - page * BOOKS_PER_PAGE : 0
     })</span>
 `;
+}
 
 ////////////////////event listeners/////////////////////////////////////////////////////
 document.querySelector("[data-search-cancel]").addEventListener("click", () => {
@@ -139,30 +149,19 @@ document.querySelector("[data-header-settings]").addEventListener("click", () =>
 document.querySelector("[data-list-close]").addEventListener("click", () => {
   document.querySelector("[data-list-active]").open = false;
 });
-//////thme set function////////////////////////////////////////////////////////
 
-// function manualThemeSelector(event) {
-//   const formData = new FormData(event.target);
-//   const { theme } = Object.fromEntries(formData);
-
-//   if (theme === "night") {
-//     document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
-//     document.documentElement.style.setProperty("--color-light", "10, 10, 20");
-//   } else {
-//     document.documentElement.style.setProperty("--color-dark", "10, 10, 20");
-//     document.documentElement.style.setProperty("--color-light", "255, 255, 255");
-//   }
-//   document.querySelector("[data-settings-overlay]").open = false;
-//   manualThemeSet = true;
-// }
-
-// applyPreferredTheme();
-// document.querySelector("[data-settings-form]").addEventListener("submit", manualThemeSelector);
+/////////////////// search function////////////////////
 
 document.querySelector("[data-search-form]").addEventListener("submit", (event) => {
-  event.preventDefault();
+  handleSearch(event);
+});
 
-  /////////////////// search function////////////////////
+/**
+ * This function hadles the search functionality of the page based on author,Genre, and search input.
+ * @param {Event} event - when the form is submited.
+ */
+function handleSearch(event) {
+  event.preventDefault();
   const formData = new FormData(event.target);
   const filters = Object.fromEntries(formData);
   const result = [];
@@ -206,28 +205,45 @@ document.querySelector("[data-search-form]").addEventListener("submit", (event) 
   document.querySelector("[data-list-button]").disabled =
     matches.length - page * BOOKS_PER_PAGE < 1;
 
-  document.querySelector("[data-list-button]").innerHTML = `
-        <span>Show more</span>
-        <span class="list__remaining"> (${
-          matches.length - page * BOOKS_PER_PAGE > 0 ? matches.length - page * BOOKS_PER_PAGE : 0
-        })</span>
-    `;
+  //   document.querySelector("[data-list-button]").innerHTML = `
+  //         <span>Show more</span>
+  //         <span class="list__remaining"> (${
+  //           matches.length - page * BOOKS_PER_PAGE > 0 ? matches.length - page * BOOKS_PER_PAGE : 0
+  //         })</span>
+  //     `;
 
+  updateShowMoreButton();
   window.scrollTo({ top: 0, behavior: "smooth" });
   document.querySelector("[data-search-overlay]").open = false;
-});
+}
 
 ////////Show more button//////////////////////////
 document.querySelector("[data-list-button]").addEventListener("click", () => {
+  handleShowMore();
+});
+
+/**
+ * Function handles the event of displaying more books.
+ */
+function handleShowMore() {
   createAndAddBooksToUI(
     matches.slice(page * BOOKS_PER_PAGE, (page + 1) * BOOKS_PER_PAGE),
     document.querySelector("[data-list-items]"),
     authors
   );
   page += 1;
-});
+  updateShowMoreButton();
+}
 
 document.querySelector("[data-list-items]").addEventListener("click", (event) => {
+  bookPreviewClick(event);
+});
+
+/**
+ * Function handles the click event on the individual book items to display their preview.
+ * @param {Event} event
+ */
+function bookPreviewClick(event) {
   const pathArray = Array.from(event.path || event.composedPath());
   let active = null;
 
@@ -256,4 +272,4 @@ document.querySelector("[data-list-items]").addEventListener("click", (event) =>
     } (${new Date(active.published).getFullYear()})`;
     document.querySelector("[data-list-description]").innerText = active.description;
   }
-});
+}

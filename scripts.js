@@ -10,18 +10,18 @@ const bookObject = books.map((book) => ({
   published: book.published,
 }));
 
-const AuthorObject = Object.entries(authors).map(([id, authorName]) => ({
+const authorObject = Object.entries(authors).map(([id, authorName]) => ({
   id,
   authorName,
 }));
 
-const genreObjects = Object.entries(genres).map(([id, genreName]) => ({
+const genreObject = Object.entries(genres).map(([id, genreName]) => ({
   id,
   genreName,
 }));
 
 let page = 1;
-let matches = books;
+let matches = bookObject;
 
 /**
  * creates and appends the book previews to the target DOM element on the UI
@@ -73,18 +73,18 @@ function CreateListAuthorGenre(data, targetElement, allOptions) {
   firstOptionElement.innerText = allOptions;
   propertyHtml.appendChild(firstOptionElement);
 
-  for (const [id, name] of Object.entries(data)) {
+  for (const item of data) {
     const element = document.createElement("option");
-    element.value = id;
-    element.innerText = name;
+    element.value = item.id;
+    element.innerText = item.authorName || item.genreName;
     propertyHtml.appendChild(element);
   }
   targetElement.appendChild(propertyHtml);
 }
 
-CreateListAuthorGenre(genres, document.querySelector("[data-search-genres]"), "All Genres");
+CreateListAuthorGenre(genreObject, document.querySelector("[data-search-genres]"), "All Genres");
 
-CreateListAuthorGenre(authors, document.querySelector("[data-search-authors]"), "all Authors");
+CreateListAuthorGenre(authorObject, document.querySelector("[data-search-authors]"), "all Authors");
 
 ////////theme function//////////////////////////////////
 
@@ -134,7 +134,7 @@ document.querySelector("[data-settings-form]").addEventListener("submit", manual
  */
 function updateShowMoreButton() {
   document.querySelector("[data-list-button]").innerText = `Show more (${
-    books.length - BOOKS_PER_PAGE
+    bookObject.length - BOOKS_PER_PAGE
   })`;
   document.querySelector("[data-list-button]").disabled =
     matches.length - page * BOOKS_PER_PAGE <= 0;
@@ -185,10 +185,10 @@ function handleSearch(event) {
   const filters = Object.fromEntries(formData);
   const result = [];
 
-  for (const book of books) {
+  for (const book of bookObject) {
     let genreMatch = filters.genre === "any";
 
-    for (const singleGenre of book.genres) {
+    for (const singleGenre of book.genre) {
       if (genreMatch) break;
       if (singleGenre === filters.genre) {
         genreMatch = true;
@@ -272,7 +272,7 @@ function bookPreviewClick(event) {
     if (node?.dataset?.preview) {
       let result = null;
 
-      for (const singleBook of books) {
+      for (const singleBook of bookObject) {
         if (result) break;
         if (singleBook.id === node?.dataset?.preview) result = singleBook;
       }

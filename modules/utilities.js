@@ -52,7 +52,11 @@ export function CreateListAuthorGenre(data, targetElement, allOptions) {
 }
 
 /**
- * updates the actual show more button text.
+ * updates the actual show more button text number.
+ *
+ * @param {number} booksPerPage - number of items to display per page
+ * @param {number} matchesLength - total number that match filtered
+ * @param {number} page - current page
  */
 export function updateShowMoreButton(matchesLength, page, booksPerPage) {
   document.querySelector("[data-list-button]").disabled = matchesLength - page * booksPerPage <= 0;

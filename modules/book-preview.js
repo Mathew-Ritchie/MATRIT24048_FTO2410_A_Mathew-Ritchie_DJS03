@@ -1,5 +1,4 @@
-import { books, authors } from "../data.js";
-import { bookObject } from "../scripts.js";
+import { bookObject, authorObject } from "../scripts.js";
 
 /**
  * Function handles the click event on the individual book items to display their preview.
@@ -29,11 +28,10 @@ export function bookPreviewClick(event) {
     document.querySelector("[data-list-blur]").src = active.image;
     document.querySelector("[data-list-image]").src = active.image;
     document.querySelector("[data-list-title]").innerText = active.title;
-    document.querySelector("[data-list-subtitle]").innerText = `${
-      authors[active.author]
-    } (${new Date(active.published).getFullYear()})`;
+    let authorName = authorObject.find((author) => author.id === active.author).authorName;
+    document.querySelector("[data-list-subtitle]").innerText = `${authorName} (${new Date(
+      active.published
+    ).getFullYear()})`;
     document.querySelector("[data-list-description]").innerText = active.description;
   }
 }
-
-document.querySelector("[data-list-items]").addEventListener("click", bookPreviewClick);

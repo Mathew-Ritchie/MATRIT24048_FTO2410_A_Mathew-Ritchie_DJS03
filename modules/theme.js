@@ -32,18 +32,14 @@ export function manualThemeSelector(event) {
   document.querySelector("[data-settings-overlay]").open = false;
 }
 
-// Event listener for the settings form submission
 document.querySelector("[data-settings-form]").addEventListener("submit", manualThemeSelector);
 
-// Event listener for DOMContentLoaded that applies the theme
 document.addEventListener("DOMContentLoaded", applyPreferredTheme);
 
-//Event listener to open the settings overlay
 document.querySelector("[data-header-settings]").addEventListener("click", () => {
   document.querySelector("[data-settings-overlay]").open = true;
 });
 
-// Event listener to close the settings overlay
 document.querySelector("[data-settings-cancel]").addEventListener("click", () => {
   document.querySelector("[data-settings-overlay]").open = false;
 });
